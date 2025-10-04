@@ -8,14 +8,16 @@ import zusContributionRates from '../data/zus_contribution_rates.json';
 export function calculateContributedAmount(profile: RetirementProfile): { raw: number, valorized: number } {
     let raw = 0;
     let valorized = 0;
+    const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
     for (const period of profile.contribution_periods) {
-        const rate = (zusContributionRates as Record<string, number>)[period.employment_type] || 0;
-        for (let year = period.start_date; year < period.end_date; year++) {
+        const periodEnd = Math.min(period.end_date, retirementYear);
+        for (let year = period.start_date; year < periodEnd; year++) {
             const yearData = getYearData(year);
             const valorization = yearData['v_idx'] || 1.0;
-            const yearlyContribution = period.gross_income * rate;
+            const yearlyContribution = calculateYearlyContribution(period.employment_type, period.gross_income, yearData);
             raw += yearlyContribution;
             valorized = (valorized + yearlyContribution) * valorization;
+            // console.log(`Year: ${year}, Type: ${period.employment_type}, Gross: ${period.gross_income}, Yearly Contribution: ${yearlyContribution.toFixed(2)}, Raw Total: ${raw.toFixed(2)}, Valorized Total: ${valorized.toFixed(2)}`);
         }
     }
     return { raw, valorized };
@@ -29,6 +31,27 @@ import yearZusData from '../data/year_zus_data.json';
  */
 function getYearData(year: number): YearZusDataEntry {
     return (yearZusData as YearZusData)[year.toString()];
+}
+
+/**
+ * Returns the ZUS contribution amount for a given employment type, year, gross_income, and yearData.
+ * For 'employment_contract' and 'maternity_leave': gross_income * 0.1952.
+ * For 'self_employed' and 'parental_leave': avg_salary * 0.6 * 0.1952.
+ * For others: gross_income * zusContributionRates[type].
+ */
+function calculateYearlyContribution(employment_type: string, gross_income: number, yearData: YearZusDataEntry): number {
+    if (employment_type === 'employment_contract' || employment_type === 'maternity_leave') {
+        return gross_income * 0.1952;
+    }
+    if (employment_type === 'self_employed' || employment_type === 'parental_leave') {
+        if (yearData && yearData.avg_salary) {
+            return yearData.avg_salary * 12 * 0.6 * 0.1952;
+        }
+        return getYearData(2100).avg_salary * 12 * 0.6 * 0.1952; // Fallback to a future year with data
+    }
+    // fallback to static rates if present
+    const rate = (zusContributionRates as Record<string, number>)[employment_type] || 0;
+    return gross_income * rate;
 }
 
 export interface ContributionPeriod {
@@ -80,4 +103,33 @@ export function calculateMonthlyRetirementAmount(profile: RetirementProfile): nu
     const expectedMonths60 = retirementYearData['e_60'] || 240;
     const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12
     return valorized / expectedMonths;
+}
+
+/**
+ * Returns a summary of retirement calculation results for a given profile.
+ * Includes: raw, valorized, monthlyRetirement, replacementRate, avgMonthlySalary (on retirement year)
+ */
+export function getRetirementSummary(profile: RetirementProfile) {
+    // Use the existing function for valorized (compounded) amount
+    const { raw, valorized } = calculateContributedAmount(profile);
+    // Determine retirement year
+    const dob = profile.profile.date_of_birth;
+    const retirementAge = profile.profile.actual_retirement_age;
+    const retirementYear = dob + retirementAge;
+    const retirementYearData = getYearData(retirementYear);
+    const expectedMonths60 = retirementYearData['e_60'] || 240;
+    const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12
+    const monthlyRetirement = expectedMonths > 0 ? valorized / expectedMonths : 0;
+    // Find the last period (by end_date, then by order)
+    const lastPeriod = profile.contribution_periods.length > 0 ? profile.contribution_periods[profile.contribution_periods.length - 1] : null;
+    const lastSalary = lastPeriod ? lastPeriod.gross_income / 12 : 0;
+    const replacementRate = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
+    const avgMonthlySalary = retirementYearData.avg_salary || 0;
+    return {
+        raw,
+        valorized,
+        monthlyRetirement,
+        replacementRate,
+        avgMonthlySalary
+    };
 }
