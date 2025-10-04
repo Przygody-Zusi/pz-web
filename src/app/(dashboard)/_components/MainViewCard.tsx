@@ -3,10 +3,16 @@
 import { useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import ChoicePanel from "./ChoicePanel"
-import ChoiceArea from "./ChoiceArea"
+import CarouselArea from "./CarouselArea"
 
 export default function MainViewCard() {
     const [showPanel, setShowPanel] = useState(false)
+    const [buttons, setButtons] = useState<string[]>(Array.from({ length: 1 }, (_, i) => `Button ${i + 1}`))
+
+    const addButton = (label: string) => {
+        setButtons((prev) => [...prev, label])
+        setShowPanel(false)
+    }
 
     return (
         <Card className="h-full shadow-lg flex flex-col">
@@ -15,11 +21,8 @@ export default function MainViewCard() {
             </CardHeader>
 
             <CardContent className="flex flex-col h-full">
-                <ChoiceArea setShowPanel={setShowPanel} />
-
-                {showPanel && (
-                    <ChoicePanel setShowPanel={setShowPanel} />
-                )}
+                <CarouselArea setShowPanel={setShowPanel} buttons={buttons} />
+                {showPanel && <ChoicePanel setShowPanel={setShowPanel} addButton={addButton} />}
             </CardContent>
         </Card>
     )
