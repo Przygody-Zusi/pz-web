@@ -1,6 +1,7 @@
-import { calculateContributedAmountInflated, calculateContributedAmount, RetirementProfile } from './retirementCalculator';
+import { calculateContributedAmountInflated } from './retirementCalculator';
 
 import yearZusDataRaw from '../data/year_zus_data.json';
+import { RetirementProfile } from './retirementTypes';
 
 
 describe('calculateContributedAmountInflated', () => {

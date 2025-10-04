@@ -1,4 +1,6 @@
-import { calculateContributedAmount, calculateContributedAmountInflated, getRetirementSummary, RetirementProfile } from './retirementCalculator';
+import { calculateContributedAmountInflated, getRetirementSummary } from './retirementCalculator';
+import { RetirementProfile } from './retirementTypes';
+
 
 describe('getRetirementSummary', () => {
     it('returns all summary fields for a simple case', () => {
