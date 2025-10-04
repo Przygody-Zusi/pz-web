@@ -1,4 +1,4 @@
-import { calculateContributedAmount, getRetirementSummary, RetirementProfile } from './retirementCalculator';
+import { calculateContributedAmount, calculateContributedAmountInflated, getRetirementSummary, RetirementProfile } from './retirementCalculator';
 
 describe('getRetirementSummary', () => {
     it('returns all summary fields for a simple case', () => {
@@ -33,7 +33,7 @@ describe('getRetirementSummary', () => {
                 }
             ]
         };
-        const { raw, valorized } = calculateContributedAmount(profile);
+        const { raw, valorized } = calculateContributedAmountInflated(profile);
 
         const expectedMonths = 333.2 - (65 - 60) * 12;
         const expectedMonthly = valorized / expectedMonths;

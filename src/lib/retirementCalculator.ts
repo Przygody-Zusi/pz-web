@@ -1,4 +1,10 @@
+// Extends YearZusDataEntry with accumulated factors for type safety
+interface YearZusDataEntryExtended extends YearZusDataEntry {
+    accumulatedSalaryIncrease: number;
+    accumulatedInflation: number;
+}
 import zusContributionRates from '../data/zus_contribution_rates.json';
+import yearZusDataRaw from '../data/year_zus_data.json';
 
 /**
  * Calculates the total contributed amount (raw and valorized) for a given profile.
@@ -22,15 +28,76 @@ export function calculateContributedAmount(profile: RetirementProfile): { raw: n
     }
     return { raw, valorized };
 }
-import yearZusData from '../data/year_zus_data.json';
+
+
+/**
+ * Precompute accumulated salaryIncrease and inflation rates for each year in year_zus_data.json, relative to the current year.
+ */
+const currentYear = new Date().getFullYear();
+const yearZusData: Record<string, YearZusDataEntryExtended> = {};
+{
+    // Prepare sorted years as numbers
+    const years = Object.keys(yearZusDataRaw).map(Number).sort((a, b) => a - b);
+    const rawData: Record<string, YearZusDataEntry> = yearZusDataRaw as Record<string, YearZusDataEntry>;
+    for (const year of years) {
+        let accSalaryIncrease = 1;
+        let accInflation = 1;
+        if (year > currentYear) {
+            // Accumulate from currentYear+1 up to and including year
+            const factors = [];
+            const inflations = [];
+            for (let y = currentYear + 1; y <= year; y++) {
+                const yData = rawData[y.toString()];
+                if (yData) {
+                    factors.push(yData.salary_increase || 1);
+                    inflations.push(yData.inflation || 1);
+                }
+            }
+            accSalaryIncrease = factors.reduce((acc, v) => acc * v, 1);
+            accInflation = inflations.reduce((acc, v) => acc * v, 1);
+        }
+        yearZusData[year.toString()] = {
+            ...rawData[year.toString()],
+            accumulatedSalaryIncrease: accSalaryIncrease,
+            accumulatedInflation: accInflation,
+        };
+    }
+}
+
+/**
+ * Calculates the total contributed amount (raw and valorized) for a given profile, adjusting gross_income for salaryIncrease to present value.
+ * @param profile RetirementProfile
+ * @returns { raw: number, valorized: number }
+ */
+export function calculateContributedAmountInflated(profile: RetirementProfile): { raw: number, valorized: number } {
+    console.log(yearZusData);
+    let raw = 0;
+    let valorized = 0;
+    const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
+    for (const period of profile.contribution_periods) {
+        const periodEnd = Math.min(period.end_date, retirementYear);
+        for (let year = period.start_date; year < periodEnd; year++) {
+            const yearData = getYearData(year);
+            const salaryIncreaseFactor = yearData.accumulatedSalaryIncrease || 1;
+            const adjustedGrossIncome = period.gross_income * salaryIncreaseFactor;
+            const yearlyContribution = calculateYearlyContribution(period.employment_type, adjustedGrossIncome, yearData);
+            const valorization = yearData['v_idx'] || 1.0;
+            raw += yearlyContribution;
+            valorized = (valorized + yearlyContribution) * valorization;
+            console.log(`Year: ${year}, salaryIncreaseFactor: ${salaryIncreaseFactor.toFixed(4)}, Adjusted Gross: ${adjustedGrossIncome.toFixed(2)}, Yearly Contribution: ${yearlyContribution.toFixed(2)}, Raw Total: ${raw.toFixed(2)}, Valorized Total: ${valorized.toFixed(2)}`);
+        }
+    }
+    return { raw, valorized };
+}
+
 
 /**
  * Retrieves the YearZusDataEntry for a given year.
  * @param year number
  * @returns YearZusDataEntry
  */
-function getYearData(year: number): YearZusDataEntry {
-    return (yearZusData as YearZusData)[year.toString()];
+function getYearData(year: number): YearZusDataEntryExtended {
+    return yearZusData[year.toString()];
 }
 
 /**
@@ -77,6 +144,8 @@ export interface RetirementProfile {
 }
 
 export interface YearZusDataEntry {
+    inflation: number;
+    salary_increase: number;
     avg_salary: number;
     v_idx: number; // valorization index
     e_60: number;  // expected lifetime in months for 60-year-old
@@ -111,7 +180,7 @@ export function calculateMonthlyRetirementAmount(profile: RetirementProfile): nu
  */
 export function getRetirementSummary(profile: RetirementProfile) {
     // Use the existing function for valorized (compounded) amount
-    const { raw, valorized } = calculateContributedAmount(profile);
+    const { raw, valorized } = calculateContributedAmountInflated(profile);
     // Determine retirement year
     const dob = profile.profile.date_of_birth;
     const retirementAge = profile.profile.actual_retirement_age;
