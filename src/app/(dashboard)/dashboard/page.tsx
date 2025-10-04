@@ -1,4 +1,3 @@
-// app/page.tsx
 "use client"
 
 import MainViewCard from "../_components/MainViewCard";
