@@ -62,3 +62,22 @@ export interface YearZusDataEntry {
 export interface YearZusData {
     [year: string]: YearZusDataEntry;
 }
+
+/**
+ * Calculates the expected monthly retirement amount at the year of actual_retirement_age.
+ * Uses compound valorized contributions and expected lifetime months for that year.
+ * @param profile RetirementProfile
+ * @returns number (monthly retirement amount)
+ */
+export function calculateMonthlyRetirementAmount(profile: RetirementProfile): number {
+    // Use the existing function for valorized (compounded) amount
+    const { valorized } = calculateContributedAmount(profile);
+    // Determine retirement year
+    const dob = profile.profile.date_of_birth;
+    const retirementAge = profile.profile.actual_retirement_age;
+    const retirementYear = dob + retirementAge;
+    const retirementYearData = getYearData(retirementYear);
+    const expectedMonths60 = retirementYearData['e_60'] || 240;
+    const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12
+    return valorized / expectedMonths;
+}
