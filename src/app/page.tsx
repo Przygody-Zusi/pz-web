@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -26,10 +25,9 @@ export default function Home() {
 
   return (
     <main className="flex flex-col items-center justify-center min-h-screen p-6">
-      {/* <h1 className="text-2xl font-bold mb-4">Next.js + shadcn Test</h1>
+      <h1 className="text-2xl font-bold mb-4">Next.js + shadcn Test</h1>
       <Button onClick={callBackend}>Call Backend</Button>
-      <p className="mt-4">Response: {response}</p> */}
-      <h1>Welcome page</h1>
+      <p className="mt-4">Response: {response}</p>
     </main>
   )
 }
