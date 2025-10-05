@@ -180,3 +180,15 @@ export function getInflatedAmount(amount: number, toYear: number): number {
     const inflationRate = yearZusData[toYear]?.accumulatedInflation;
     return amount * (inflationRate || 1);
 }
+
+/**
+ * Returns the original (deflated) amount from a future inflated value, using accumulatedInflation for the given year.
+ * @param inflatedAmount The amount in future (inflated) value
+ * @param toYear The year to deflate to present value
+ * @returns The deflated (present value) amount
+ */
+export function getDeflatedAmount(inflatedAmount: number, fromYear: number): number {
+    const inflationRate = yearZusData[fromYear]?.accumulatedInflation;
+    if (!inflationRate || inflationRate === 0) return inflatedAmount;
+    return inflatedAmount / inflationRate;
+}
