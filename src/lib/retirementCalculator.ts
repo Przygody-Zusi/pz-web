@@ -1,8 +1,6 @@
 import {
-    ContributionPeriod,
     RetirementProfile,
     YearZusDataEntry,
-    YearZusData
 } from './retirementTypes';
 import zusContributionRates from '../data/zus_contribution_rates.json';
 import yearZusDataRaw from '../data/year_zus_data.json';
@@ -178,8 +176,8 @@ export function getDeflatedAmount(inflatedAmount: number, fromYear: number): num
  * @param valorized number (initial valorized amount)
  * @returns Array<{ year: number, raw: number, valorized: number }>
  */
-export function retireExtended(profile: RetirementProfile, initialRaw: number, initialValorized: number): Array<{ year: number, raw: number, valorized: number }> {
-    const results = [];
+export function retireExtended(profile: RetirementProfile, initialRaw: number, initialValorized: number): Array<{ year: number, raw: number, valorized: number, monthlyRetirement: number, replacementRate: number, avgMonthlySalary: number }> {
+    const results: Array<{ year: number, raw: number, valorized: number, monthlyRetirement: number, replacementRate: number, avgMonthlySalary: number }> = [];
     const lastPeriod = profile.contribution_periods.length > 0 ? profile.contribution_periods[profile.contribution_periods.length - 1] : null;
     if (!lastPeriod) return [];
 
@@ -203,10 +201,10 @@ export function retireExtended(profile: RetirementProfile, initialRaw: number, i
         const expectedMonths60 = yearData['e_60'] || 240;
         const retirementAge = startRetirementAge + i + 1;
         const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12;
-        const monthlyRetirement = expectedMonths > 0 ? valorized / expectedMonths : 0;
+        const monthlyRetirement: number = expectedMonths > 0 ? valorized / expectedMonths : 0;
         const salaryIncrease = lastPeriod ? (yearZusData[year.toString()]?.accumulatedSalaryIncrease || 1) : 1;
-        const lastSalary = lastPeriod.gross_income * salaryIncrease / 12;
-        const replacementRate = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
+        const lastSalary: number = lastPeriod.gross_income * salaryIncrease / 12;
+        const replacementRate: number = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
         const avgMonthlySalary = yearData.avg_salary || 0;
 
         results.push({

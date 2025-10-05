@@ -26,17 +26,17 @@ export default function ProfileFormStep({
         onUpdate(newProfile);
     };
 
-    const updatePersonalInfo = (field: string, value: any) => {
+    const updatePersonalInfo = (field: keyof RetirementProfile["profile"], value: RetirementProfile["profile"][keyof RetirementProfile["profile"]]) => {
         updateProfile({
             profile: { ...profile.profile, [field]: value },
         });
     };
 
-    const updateRetirementGoals = (field: string, value: any) => {
-        updateProfile({
-            retirement_goals: { ...profile.retirement_goals, [field]: value },
-        });
-    };
+    // const updateRetirementGoals = (field: keyof RetirementProfile["retirement_goals"], value: RetirementProfile["retirement_goals"][keyof RetirementProfile["retirement_goals"]]) => {
+    //     updateProfile({
+    //         retirement_goals: { ...profile.retirement_goals, [field]: value },
+    //     });
+    // };
 
     const addContributionPeriod = () => {
         const newPeriod = {
@@ -50,7 +50,7 @@ export default function ProfileFormStep({
         });
     };
 
-    const updateContributionPeriod = (index: number, updates: any) => {
+    const updateContributionPeriod = (index: number, updates: Partial<RetirementProfile["contribution_periods"][number]>) => {
         const newPeriods = [...profile.contribution_periods];
         newPeriods[index] = { ...newPeriods[index], ...updates };
         updateProfile({ contribution_periods: newPeriods });

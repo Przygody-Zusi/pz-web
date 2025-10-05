@@ -1,6 +1,14 @@
-import { useState } from 'react';
+import Image from "next/image";
 
-// Main component - exported as default
+interface VisualNovelDialogueProps {
+  backgroundImage: string;
+  dialogueText: string;
+  dialogueBoxImage?: string;
+  dialogueBoxMargin?: number;
+  textMargin?: number;
+  textSize?: number;
+}
+
 export default function VisualNovelDialogue({ 
   backgroundImage, 
   dialogueText,
@@ -8,16 +16,18 @@ export default function VisualNovelDialogue({
   dialogueBoxMargin = 20,
   textMargin = 40,
   textSize = 1
-}) {
+}: VisualNovelDialogueProps) {
   return (
     <div className="w-full h-full flex items-center justify-center">
       {/* Container that scales to fit smallest dimension */}
       <div className="relative w-full h-full flex items-center justify-center">
         <div className="relative max-w-full max-h-full flex items-end justify-center">
           {/* Background Image - Contained */}
-          <img
+          <Image
             src={backgroundImage}
             alt="Background scene"
+            width={600}
+            height={400}
             className="max-w-full max-h-full object-contain block"
           />
           
@@ -28,10 +38,12 @@ export default function VisualNovelDialogue({
           >
             <div className="relative w-full">
               {/* Dialogue Box Image - Stretches Horizontally */}
-              <img
+              <Image
                 src={dialogueBoxImage}
                 alt="Dialogue box"
                 className="w-full h-auto block"
+                width={600}
+                height={100}
               />
               
               {/* Text Overlay */}

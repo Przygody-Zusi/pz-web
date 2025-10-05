@@ -28,7 +28,7 @@ function ZusiaAvatar({ step }: { step: 1 | 2 | 3 }) {
     // Losuj ciekawostkę tylko raz przy każdej zmianie kroku
     const randomTrivia = useMemo(() => {
         return zusTrivia[Math.floor(Math.random() * zusTrivia.length)];
-    }, [step]);
+    }, []);
 
     const zusiaData = {
         1: {

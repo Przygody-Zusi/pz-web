@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { RetirementProfile } from "@/lib/retirementTypes";
-import { getRetirementSummary, retireExtended, getInflatedAmount, getDeflatedAmount } from "@/lib/retirementCalculator";
+import { getRetirementSummary, retireExtended, getDeflatedAmount } from "@/lib/retirementCalculator";
 
 interface SummaryStepProps {
     profile: RetirementProfile;
@@ -98,10 +98,9 @@ const FUN_FACT_TEMPLATES = [
 
 interface FunFactsProps {
     monthlyRetirement: number; // w dzisiejszej wartości
-    retirementYear: number;
 }
 
-function FunFacts({ monthlyRetirement, retirementYear }: FunFactsProps) {
+function FunFacts({ monthlyRetirement }: FunFactsProps) {
     // Losuj 3 unikalne ciekawostki
     const selectedFacts = useMemo(() => {
         const shuffled = [...FUN_FACT_TEMPLATES].sort(() => Math.random() - 0.5);
@@ -148,7 +147,7 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
         [profile, summary]
     );
 
-    const currentYear = new Date().getFullYear();
+    // const currentYear = new Date().getFullYear();
     const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
     const deflatedMonthlyRetirement = getDeflatedAmount(summary.monthlyRetirement, retirementYear);
 
@@ -269,7 +268,6 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
             {/* Fun Facts - Ciekawostki */}
             <FunFacts
                 monthlyRetirement={deflatedMonthlyRetirement}
-                retirementYear={retirementYear}
             />
 
             {/* Action Buttons */}
