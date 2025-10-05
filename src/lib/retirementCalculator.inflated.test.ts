@@ -1,4 +1,4 @@
-import { calculateContributedAmountInflated } from './retirementCalculator';
+import { calculateContributedAmountInflated, getInflatedAmount } from './retirementCalculator';
 
 import yearZusDataRaw from '../data/year_zus_data.json';
 import { RetirementProfile } from './retirementTypes';
@@ -32,6 +32,21 @@ describe('calculateContributedAmountInflated', () => {
             },
         ],
     };
+
+
+    describe('getInflatedAmount', () => {
+        it('should return the same amount if inflation is 1', () => {
+            // Use a year where inflation is 1 (or not defined)
+            const result = getInflatedAmount(1000, 2020);
+            expect(result).toBe(1000);
+        });
+    });
+
+    it('should apply accumulatedInflation for a future year', () => {
+        const result = getInflatedAmount(1000, 2030);
+        const expectedInflation = yearZusDataRaw['2026'].inflation * yearZusDataRaw['2027'].inflation * yearZusDataRaw['2028'].inflation * yearZusDataRaw['2029'].inflation * yearZusDataRaw['2030'].inflation;
+        expect(result).toBeCloseTo(1000 * expectedInflation, 2);
+    });
 
 
     it('should calculate correct raw and valorized amounts for baseProfile', () => {

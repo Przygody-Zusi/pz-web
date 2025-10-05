@@ -176,3 +176,8 @@ export function getRetirementSummary(profile: RetirementProfile) {
         avgMonthlySalary
     };
 }
+
+export function getInflatedAmount(amount: number, toYear: number): number {
+    const inflationRate = yearZusData[toYear]?.accumulatedInflation;
+    return amount * (inflationRate || 1);
+}
