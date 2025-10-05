@@ -140,7 +140,8 @@ export function getRetirementSummary(profile: RetirementProfile) {
     const monthlyRetirement = expectedMonths > 0 ? valorized / expectedMonths : 0;
     // Find the last period (by end_date, then by order)
     const lastPeriod = profile.contribution_periods.length > 0 ? profile.contribution_periods[profile.contribution_periods.length - 1] : null;
-    const lastSalary = lastPeriod ? lastPeriod.gross_income / 12 : 0;
+    const salaryIncrease = lastPeriod ? (yearZusData[retirementYear.toString()]?.accumulatedSalaryIncrease || 1) : 1;
+    const lastSalary = lastPeriod ? lastPeriod.gross_income * salaryIncrease / 12 : 0;
     const replacementRate = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
     const avgMonthlySalary = retirementYearData.avg_salary || 0;
     return {
@@ -203,7 +204,8 @@ export function retireExtended(profile: RetirementProfile, initialRaw: number, i
         const retirementAge = startRetirementAge + i + 1;
         const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12;
         const monthlyRetirement = expectedMonths > 0 ? valorized / expectedMonths : 0;
-        const lastSalary = lastPeriod.gross_income / 12;
+        const salaryIncrease = lastPeriod ? (yearZusData[year.toString()]?.accumulatedSalaryIncrease || 1) : 1;
+        const lastSalary = lastPeriod.gross_income * salaryIncrease / 12;
         const replacementRate = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
         const avgMonthlySalary = yearData.avg_salary || 0;
 
