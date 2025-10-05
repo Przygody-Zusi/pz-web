@@ -38,21 +38,21 @@ useEffect(() => {
       const mappedSlides = [
         {
           title: "Twoja przewidywana emerytura",
-          text: `Twoja przewidywana emerytura to ${monthlyRetirement} zł miesięcznie.`,
+          text: `Twoja przewidywana emerytura to ${Math.round(monthlyRetirement)} zł miesięcznie.`,
           highlight: "💰",
           bg: "bg-gradient-to-br from-[#ffb34f] via-[#00993f] to-[#3f84d2]",
           textColor: "text-white",
         },
         {
           title: "Siła nabywcza",
-          text: `W przeliczeniu na dzisiejszą wartość pieniądze, twoja emerytura to ${raw} zł miesięcznie.`,
+          text: `W przeliczeniu na dzisiejszą wartość pieniądze, twoja emerytura to ${Math.round(raw)} zł miesięcznie.`,
           highlight: "🕰️",
           bg: "bg-gradient-to-br from-[#f05e5e] via-[#ffb34f] to-[#000000]",
           textColor: "text-white",
         },
         {
           title: "W porównaniu do innych",
-          text: `Twoja emerytura to: ${monthlyRetirement/avgMonthlySalary} - wielokrotność średniej emerytury!`,
+          text: `Twoja emerytura to: ${(monthlyRetirement/avgMonthlySalary).toFixed(2)} - wielokrotność średniej emerytury!`,
           highlight: "🌅",
           bg: "bg-gradient-to-br from-[#bec3ce] via-[#3f84d2] to-[#00416e]",
           textColor: "text-gray-100",
