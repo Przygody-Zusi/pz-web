@@ -1,0 +1,1 @@
+export type EmploymentType = "employment_contract" | "self_employed" | "mandate_contract" | "maternity_leave" | "parental_leave" | "no_employment";

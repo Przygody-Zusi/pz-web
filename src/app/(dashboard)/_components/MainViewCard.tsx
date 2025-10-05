@@ -1,32 +1,71 @@
 "use client"
 
-import { useState } from "react"
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { useEffect, useState } from "react"
+import { Card, CardContent } from "@/components/ui/card"
 import ChoicePanel from "./ChoicePanel"
 import CarouselArea from "./CarouselArea"
 import BasicForm from "../_components/BasicForm"
-
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useRetirementStore } from "@/store/useRetirement"
 
 export default function MainViewCard() {
     const [showPanel, setShowPanel] = useState(false)
-    const [buttons, setButtons] = useState<string[]>(Array.from({ length: 1 }, (_, i) => `Button ${i + 1}`))
+    const [buttons, setButtons] = useState<string[]>(Array.from({ length: 1 }, (_, i) => `Wybór ${i + 1}`))
+
+    const { retirementProfile, setRetirementProfile, isLoading, setIsLoading } = useRetirementStore()
 
     const addButton = (label: string) => {
         setButtons((prev) => [...prev, label])
         setShowPanel(false)
     }
 
-    return (
-        <Card className="h-full shadow-lg flex flex-col">
-            <CardHeader>
-                <CardTitle className="text-xl font-semibold">Główny widok</CardTitle>
-            </CardHeader>
+    useEffect(() => {
+        const callBackend = async () => {
+            try {
+                const res = await fetch("http://localhost:8000/api/LLM/generate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ prompt: "Jestem informatykiem lat 25, ukończyłem studia inżynierskie." }),
+                })
 
-            <CardContent className="flex flex-col h-full">
-                <BasicForm/>
-                <CarouselArea setShowPanel={setShowPanel} buttons={buttons} />
-                {showPanel && <ChoicePanel setShowPanel={setShowPanel} addButton={addButton} />}
-            </CardContent>
-        </Card>
+                if (!res.ok) throw new Error("Backend error")
+                const data = await res.json()
+
+                const profile = {
+                    contribution_periods: data.contribution_periods,
+                    profile: data.profile,
+                    retirement_goals: data.retirement_goals,
+                }
+
+                console.log("Constructed profile:", profile)
+                setRetirementProfile(profile)
+                setIsLoading(false)
+            } catch (err) {
+                console.error(err)
+                setIsLoading(false)
+            }
+        }
+
+        if (!retirementProfile) callBackend()
+    }, [retirementProfile, setRetirementProfile, setIsLoading])
+
+    return (
+        <ScrollArea className="h-[90vh] w-full rounded-lg">
+            <Card className="h-full shadow-lg flex flex-col">
+                <CardContent className="flex flex-col h-full">
+                    <BasicForm />
+                    <CarouselArea setShowPanel={setShowPanel} buttons={buttons} />
+                    {showPanel && (
+                        <ChoicePanel
+                            setShowPanel={setShowPanel}
+                            addButton={addButton}
+                            nextId={buttons.length + 1}
+                            isLoading={isLoading}
+                            retirementProfile={retirementProfile}
+                        />
+                    )}
+                </CardContent>
+            </Card>
+        </ScrollArea>
     )
 }

@@ -1,6 +1,5 @@
 "use client"
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import * as React from "react"
 
@@ -13,32 +12,21 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 
-// export default function ChoiceArea{
-//     return (
-//         <ScrollArea className="rounded-md border whitespace-nowrap h-2/5 mb-4">
-//             <div className="flex gap-2 p-8">
-//                 {(
-
-//                 ))}
-//             </div>
-//             <ScrollBar orientation="horizontal" />
-//         </ScrollArea>
-//     )
-// }
-
 export default function CarouselArea({
     setShowPanel,
     buttons,
+    isSubmitted = false,
 }: {
     setShowPanel: (value: boolean) => void
     buttons: string[]
+    isSubmitted?: boolean
 }) {
     return (
         <Carousel
             opts={{
                 align: "start",
             }}
-            className="rounded-md border whitespace-nowrap h-2/5 mb-4 w-0-full"
+            className="whitespace-nowrap h-2/5 mb-4 *:mx-10"
         >
             <CarouselContent>
                 {buttons.map((label, index) => (
@@ -50,6 +38,7 @@ export default function CarouselArea({
                                         key={index}
                                         className="py-12 px-14 text-lg font-medium"
                                         onClick={() => setShowPanel(true)}
+                                        disabled={isSubmitted}
                                     >
                                         {label}
                                     </Button>
@@ -59,8 +48,8 @@ export default function CarouselArea({
                     </CarouselItem>
                 ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            {/* <CarouselPrevious />
+            <CarouselNext /> */}
         </Carousel>
     )
 }
