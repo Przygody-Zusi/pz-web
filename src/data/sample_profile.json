@@ -1,0 +1,28 @@
+{
+    "profile": {
+        "date_of_birth": 1990,
+        "gender": "male",
+        "employment_start_date": 2015,
+        "actual_retirement_age": 65,
+        "initial_amount": 0
+    },
+    "retirement_goals": {
+        "initial_prompt": "I'm 35 years old, earning 10,000 PLN monthly on an employment contract. I want to retire at 65.",
+        "expected_retirement_age": 65,
+        "expected_life_status": 80
+    },
+    "contribution_periods": [
+        {
+            "start_date": 2015,
+            "end_date": 2025,
+            "gross_income": 96000,
+            "employment_type": "employment_contract"
+        },
+        {
+            "start_date": 2025,
+            "end_date": 2055,
+            "gross_income": 120000,
+            "employment_type": "employment_contract"
+        }
+    ]
+}
