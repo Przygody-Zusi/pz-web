@@ -25,9 +25,9 @@ describe('calculateContributedAmount (simple)', () => {
         // 2015: v_idx: 1.1, 2016: v_idx: 1.2
         const profile = {
             profile: {
-                date_of_birth: 1980,
+                date_of_birth: 2000,
                 gender: 'male',
-                employment_start_date: 2000,
+                employment_start_date: 2010,
                 actual_retirement_age: 65
             },
             retirement_goals: {
@@ -50,8 +50,13 @@ describe('calculateContributedAmount (simple)', () => {
                 }
             ]
         };
-        const raw_expected = 100000 * 0.1952 + 80000 * 0.1952;
-        const valorized_expected = ((100000 * 0.1952 * 1.0537) + (80000 * 0.1952)) * 1.0637;
+
+        const raw_2015 = 100000 * 0.1952; // employment_contract
+        const raw_2016 = 4047.21 * 12 * 0.6 * 0.1952;
+        const raw_expected = raw_2015 + raw_2016;
+        const valorized_expected = ((raw_2015 * 1.0537) + raw_2016) * 1.0637;
+
+        console.log(`Expected Raw: ${raw_expected.toFixed(2)}, Expected Valorized: ${valorized_expected.toFixed(2)}`);
 
         expect(calculateContributedAmount(profile)).toEqual({ raw: raw_expected, valorized: valorized_expected });
     });
