@@ -138,8 +138,34 @@ export default function ProfileFormStep({
                     </div>
                     <div className="space-y-4">
                         {profile.contribution_periods.map((period, index) => (
-                            <div key={index} className="border rounded-lg p-4 bg-muted/30">
-                                <div className="grid md:grid-cols-4 gap-4">
+                            <div key={index} className="border-2 border-primary/20 rounded-lg p-4 bg-muted/30 relative">
+                                <Button
+                                    onClick={() => removeContributionPeriod(index)}
+                                    variant="destructive"
+                                    size="sm"
+                                    className="absolute top-3 right-3 h-9 w-9 p-0 z-10 flex items-center justify-center bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+                                    title="Usuń okres składkowy"
+                                    aria-label="Usuń okres składkowy"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                    >
+                                        <path d="M3 6h18" />
+                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                        <line x1="10" x2="10" y1="11" y2="17" />
+                                        <line x1="14" x2="14" y1="11" y2="17" />
+                                    </svg>
+                                </Button>
+                                <div className="grid md:grid-cols-4 gap-4 pr-12">
                                     <div>
                                         <label className="block text-sm font-medium mb-2">Rok Rozpoczęcia</label>
                                         <Input
@@ -194,14 +220,6 @@ export default function ProfileFormStep({
                                         </select>
                                     </div>
                                 </div>
-                                <Button
-                                    onClick={() => removeContributionPeriod(index)}
-                                    variant="destructive"
-                                    size="sm"
-                                    className="mt-2"
-                                >
-                                    Usuń Okres
-                                </Button>
                             </div>
                         ))}
                     </div>
