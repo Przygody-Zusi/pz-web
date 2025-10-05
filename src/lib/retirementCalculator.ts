@@ -155,7 +155,7 @@ export function getRetirementSummary(profile: RetirementProfile) {
     // Use the existing function for valorized (compounded) amount
     const { raw, valorized } = calculateContributedAmountInflated(profile);
     // Determine retirement year
-    const dob = profile.profile.date_of_birth;
+    const dob = Number(profile.profile.date_of_birth);
     const retirementAge = profile.profile.actual_retirement_age;
     const retirementYear = dob + retirementAge;
     const retirementYearData = getYearData(retirementYear);
