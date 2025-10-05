@@ -214,6 +214,23 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
             }
         });
 
+        // Prepare data for charts - show every 3 years for clarity
+        const chartData = extendedData.slice(0, 15).filter((_, i) => i % 3 === 0).map((data) => {
+            const additionalYears = data.year - retirementYear;
+            const deflatedMonthly = getDeflatedAmount(data.monthlyRetirement, data.year);
+            return {
+                year: data.year,
+                additionalYears,
+                monthlyRetirement: Math.round(deflatedMonthly),
+                replacementRate: (data.replacementRate * 100).toFixed(1),
+            };
+        });
+
+        // Generate chart data for JavaScript
+        const chartLabels = JSON.stringify(chartData.map(d => `+${d.additionalYears} ${d.additionalYears === 1 ? 'rok' : d.additionalYears < 5 ? 'lata' : 'lat'}`));
+        const chartMonthlyData = JSON.stringify(chartData.map(d => d.monthlyRetirement));
+        const chartReplacementData = JSON.stringify(chartData.map(d => parseFloat(d.replacementRate)));
+
         // Create a simple HTML page with the report
         const htmlContent = `
             <!DOCTYPE html>
@@ -221,6 +238,7 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
             <head>
                 <meta charset="utf-8">
                 <title>Raport Emerytalny - Przygody Zusi</title>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
                 <style>
                     @media print {
                         body { margin: 0; }
@@ -335,6 +353,27 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
                     .print-button:hover {
                         background-color: #1e40af;
                     }
+                    .chart-container {
+                        position: relative;
+                        height: 400px;
+                        margin: 30px 0;
+                        padding: 20px;
+                        background: white;
+                        border-radius: 8px;
+                        border: 1px solid #e5e7eb;
+                    }
+                    .charts-grid {
+                        display: grid;
+                        grid-template-columns: 1fr;
+                        gap: 30px;
+                        margin: 40px 0;
+                    }
+                    @media print {
+                        .chart-container {
+                            page-break-inside: avoid;
+                            break-inside: avoid;
+                        }
+                    }
                 </style>
             </head>
             <body>
@@ -370,12 +409,175 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
                 <h2>💡 Analiza AI</h2>
                 ${formattedContent}
 
+                <h2>📊 Scenariusze Odroczenia Emerytury</h2>
+                <p>Poniższe wykresy pokazują, jak Twoja emerytura wzrośnie, jeśli zdecydujesz się pracować dłużej niż planowany wiek emerytalny.</p>
+                
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <canvas id="monthlyRetirementChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="replacementRateChart"></canvas>
+                    </div>
+                </div>
+
                 <div class="footer">
                     <p><strong>Przygody Zusi</strong> - Twój przewodnik po emeryturze</p>
                     <p>Ten raport został wygenerowany automatycznie na podstawie Twoich danych</p>
                 </div>
 
                 <button class="print-button no-print" onclick="window.print()">🖨️ Drukuj / Zapisz jako PDF</button>
+
+                <script>
+                    // Chart data
+                    const labels = ${chartLabels};
+                    const monthlyData = ${chartMonthlyData};
+                    const replacementData = ${chartReplacementData};
+
+                    // Common chart options
+                    const commonOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#e5e7eb'
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        size: 12
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    // Monthly Retirement Chart
+                    const ctx1 = document.getElementById('monthlyRetirementChart').getContext('2d');
+                    new Chart(ctx1, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Miesięczna Emerytura (PLN)',
+                                data: monthlyData,
+                                backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                                borderColor: 'rgba(37, 99, 235, 1)',
+                                borderWidth: 2,
+                                borderRadius: 6
+                            }]
+                        },
+                        options: {
+                            ...commonOptions,
+                            plugins: {
+                                ...commonOptions.plugins,
+                                title: {
+                                    display: true,
+                                    text: 'Miesięczna Emerytura w Dzisiejszej Wartości',
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    },
+                                    color: '#1f2937'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.parsed.y.toLocaleString('pl-PL') + ' PLN';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                ...commonOptions.scales,
+                                y: {
+                                    ...commonOptions.scales.y,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value.toLocaleString('pl-PL') + ' PLN';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Replacement Rate Chart
+                    const ctx2 = document.getElementById('replacementRateChart').getContext('2d');
+                    new Chart(ctx2, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Stopa Zastąpienia (%)',
+                                data: replacementData,
+                                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                                borderColor: 'rgba(16, 185, 129, 1)',
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointRadius: 5,
+                                pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2
+                            }]
+                        },
+                        options: {
+                            ...commonOptions,
+                            plugins: {
+                                ...commonOptions.plugins,
+                                title: {
+                                    display: true,
+                                    text: 'Stopa Zastąpienia - Procent Ostatniego Wynagrodzenia',
+                                    font: {
+                                        size: 16,
+                                        weight: 'bold'
+                                    },
+                                    color: '#1f2937'
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return context.parsed.y.toFixed(1) + '%';
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                ...commonOptions.scales,
+                                y: {
+                                    ...commonOptions.scales.y,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Wait for charts to render before allowing print
+                    setTimeout(() => {
+                        document.body.classList.add('charts-loaded');
+                    }, 1000);
+                </script>
             </body>
             </html>
         `;
@@ -387,10 +589,10 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
             printWindow.document.close();
             printWindow.focus();
 
-            // Trigger print dialog after a short delay
+            // Trigger print dialog after charts have loaded
             setTimeout(() => {
                 printWindow.print();
-            }, 500);
+            }, 1500);
         }
     };
 

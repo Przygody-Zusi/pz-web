@@ -7,7 +7,7 @@
         "initial_amount": 50000.0
     },
     "retirement_goals": {
-        "initial_prompt": "Jest rok 2025. Mam 25 lat, zarabiam 8000 PLN miesięcznie. Pracuję od 3 lat. Jestem informatykiem. Chcę przejść na emeryturę w wieku 65 lat z komfortowym stylem życia.",
+        "initial_prompt": "Jest rok 2025. Mam 25 lat, zarabiam 8000 PLN miesięcznie. Pracuję od 3 lat. Jestem informatykiem. Chcę przejść na emeryturę w wieku 65 lat i móc żeglować po świecie.",
         "expected_retirement_age": 65,
         "expected_retirement_salary": 151200.0,
         "expected_life_status": 0.8
