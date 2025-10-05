@@ -77,7 +77,7 @@ const yearZusData: Record<string, YearZusDataEntryExtended> = {};
  * @returns { raw: number, valorized: number }
  */
 export function calculateContributedAmountInflated(profile: RetirementProfile): { raw: number, valorized: number } {
-    console.log(yearZusData);
+    // console.log(yearZusData);
     let raw = 0;
     let valorized = 0;
     const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
@@ -91,7 +91,7 @@ export function calculateContributedAmountInflated(profile: RetirementProfile): 
             const valorization = yearData['v_idx'] || 1.0;
             raw += yearlyContribution;
             valorized = (valorized + yearlyContribution) * valorization;
-            console.log(`Year: ${year}, salaryIncreaseFactor: ${salaryIncreaseFactor.toFixed(4)}, Adjusted Gross: ${adjustedGrossIncome.toFixed(2)}, Yearly Contribution: ${yearlyContribution.toFixed(2)}, Raw Total: ${raw.toFixed(2)}, Valorized Total: ${valorized.toFixed(2)}`);
+            // console.log(`Year: ${year}, salaryIncreaseFactor: ${salaryIncreaseFactor.toFixed(4)}, Adjusted Gross: ${adjustedGrossIncome.toFixed(2)}, Yearly Contribution: ${yearlyContribution.toFixed(2)}, Raw Total: ${raw.toFixed(2)}, Valorized Total: ${valorized.toFixed(2)}`);
         }
     }
     return { raw, valorized };
