@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
-import { getRetirementSummary  } from "@/lib/retirementCalculator"
+import { getRetirementSummary, getDeflatedAmount  } from "@/lib/retirementCalculator"
 
 
 
@@ -33,7 +33,7 @@ useEffect(() => {
 
       // Calculate expected monthly retirement amount
       const { raw, valorized, monthlyRetirement, replacementRate, avgMonthlySalary } = getRetirementSummary(data)
-
+      const retirementYear = Number(data.profile.date_of_birth) + Number(data.profile.actual_retirement_age);
 
       const mappedSlides = [
         {
@@ -45,14 +45,14 @@ useEffect(() => {
         },
         {
           title: "Siła nabywcza",
-          text: `W przeliczeniu na dzisiejszą wartość pieniądze, twoja emerytura to ${Math.round(raw)} zł miesięcznie.`,
+          text: `W przeliczeniu na dzisiejszą wartość pieniądze, twoja emerytura to ${Math.round(getDeflatedAmount(monthlyRetirement, retirementYear))} zł miesięcznie.`,
           highlight: "🕰️",
           bg: "bg-gradient-to-br from-[#f05e5e] via-[#ffb34f] to-[#000000]",
           textColor: "text-white",
         },
         {
-          title: "W porównaniu do innych",
-          text: `Twoja emerytura to: ${(monthlyRetirement/avgMonthlySalary).toFixed(2)} - wielokrotność średniej emerytury!`,
+          title: "Stopa zastąpienia",
+          text: `Twoja emerytura będzie: ${(replacementRate).toFixed(2)} twojego ostatniego dochodu!`,
           highlight: "🌅",
           bg: "bg-gradient-to-br from-[#bec3ce] via-[#3f84d2] to-[#00416e]",
           textColor: "text-gray-100",
