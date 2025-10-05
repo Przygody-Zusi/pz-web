@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { RetirementProfile } from "@/lib/retirementTypes";
 import { getRetirementSummary, retireExtended, getDeflatedAmount } from "@/lib/retirementCalculator";
@@ -147,9 +147,255 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
         [profile, summary]
     );
 
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+
     // const currentYear = new Date().getFullYear();
     const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
     const deflatedMonthlyRetirement = getDeflatedAmount(summary.monthlyRetirement, retirementYear);
+
+    const handleGenerateReport = async () => {
+        setIsGeneratingReport(true);
+        try {
+            // Calculate years to live average
+            // Based on the retirement calculator logic: e_60 - (retirementAge - 60) * 12
+            const retirementAge = profile.profile.actual_retirement_age;
+            const expectedMonths60 = 240; // approximate average
+            const expectedMonths = Math.max(expectedMonths60 - (retirementAge - 60) * 12, 0);
+            const yearsToLiveAverage = Math.round(expectedMonths / 12);
+
+            // Prepare the request payload
+            const payload = {
+                profile: profile,
+                raw: summary.raw,
+                total_savings_contemporary: summary.valorized,
+                monthlyRetirement: summary.monthlyRetirement,
+                yearsToLiveAverage: yearsToLiveAverage,
+                replacementRate: summary.replacementRate,
+                avgMonthlySalary: summary.avgMonthlySalary
+            };
+
+            // Call the backend API
+            const response = await fetch("http://localhost:8000/api/LLM/analyze_goals", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const jsonResponse = await response.json();
+            const reportText = jsonResponse.analisys || jsonResponse.analysis || "Brak raportu";
+
+            // Generate PDF from the report text
+            console.log("Generated report:", reportText);
+            generatePDF(reportText);
+        } catch (error) {
+            console.error("Error generating report:", error);
+            alert("Wystąpił błąd podczas generowania raportu. Spróbuj ponownie.");
+        } finally {
+            setIsGeneratingReport(false);
+        }
+    };
+
+    const generatePDF = (reportText: string) => {
+        // Format the report text - split by lines and format goals
+        const lines = reportText.split('\n');
+        let formattedContent = '';
+
+        lines.forEach(line => {
+            const trimmedLine = line.trim();
+            if (trimmedLine.startsWith('Cel ')) {
+                // Format goal lines with checkmark
+                formattedContent += `<div class="goal-item">✓ ${trimmedLine}</div>`;
+            } else if (trimmedLine.length > 0) {
+                // Regular paragraphs
+                formattedContent += `<p>${trimmedLine}</p>`;
+            }
+        });
+
+        // Create a simple HTML page with the report
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>Raport Emerytalny - Przygody Zusi</title>
+                <style>
+                    @media print {
+                        body { margin: 0; }
+                        .no-print { display: none; }
+                    }
+                    body {
+                        font-family: 'Segoe UI', Arial, sans-serif;
+                        line-height: 1.8;
+                        max-width: 800px;
+                        margin: 0 auto;
+                        padding: 40px 20px;
+                        color: #1f2937;
+                    }
+                    h1 {
+                        color: #2563eb;
+                        border-bottom: 3px solid #2563eb;
+                        padding-bottom: 15px;
+                        margin-bottom: 30px;
+                        font-size: 2.5em;
+                    }
+                    h2 {
+                        color: #1e40af;
+                        margin-top: 40px;
+                        margin-bottom: 20px;
+                        font-size: 1.8em;
+                    }
+                    .info-box {
+                        background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+                        border-left: 5px solid #2563eb;
+                        padding: 20px;
+                        margin: 30px 0;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                    }
+                    .summary-box {
+                        background-color: #f9fafb;
+                        padding: 25px;
+                        margin: 30px 0;
+                        border-radius: 8px;
+                        border: 2px solid #e5e7eb;
+                    }
+                    .summary-stats {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 20px;
+                        margin-top: 20px;
+                    }
+                    .stat-item {
+                        text-align: center;
+                        padding: 15px;
+                        background: white;
+                        border-radius: 6px;
+                        border: 1px solid #e5e7eb;
+                    }
+                    .stat-value {
+                        font-size: 1.8em;
+                        font-weight: bold;
+                        color: #2563eb;
+                        display: block;
+                        margin-bottom: 5px;
+                    }
+                    .stat-label {
+                        font-size: 0.9em;
+                        color: #6b7280;
+                    }
+                    p {
+                        margin: 20px 0;
+                        font-size: 1.1em;
+                        text-align: justify;
+                    }
+                    .goal-item {
+                        background-color: #f0fdf4;
+                        border-left: 4px solid #10b981;
+                        padding: 15px 15px 15px 45px;
+                        margin: 15px 0;
+                        border-radius: 4px;
+                        position: relative;
+                        font-size: 1.05em;
+                    }
+                    .goal-item::before {
+                        content: '✓';
+                        position: absolute;
+                        left: 15px;
+                        color: #10b981;
+                        font-size: 1.5em;
+                        font-weight: bold;
+                    }
+                    .goals-section {
+                        margin-top: 40px;
+                    }
+                    .footer {
+                        margin-top: 60px;
+                        padding-top: 20px;
+                        border-top: 2px solid #e5e7eb;
+                        text-align: center;
+                        color: #6b7280;
+                        font-size: 0.9em;
+                    }
+                    .print-button {
+                        background-color: #2563eb;
+                        color: white;
+                        padding: 12px 24px;
+                        border: none;
+                        border-radius: 6px;
+                        font-size: 1.1em;
+                        cursor: pointer;
+                        margin: 20px 0;
+                        display: block;
+                        margin-left: auto;
+                        margin-right: auto;
+                    }
+                    .print-button:hover {
+                        background-color: #1e40af;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>📊 Raport Emerytalny - Przygody Zusi</h1>
+                
+                <div class="info-box">
+                    <strong>📅 Data wygenerowania:</strong> ${new Date().toLocaleDateString("pl-PL", {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        })}<br>
+                    <strong>🎯 Status:</strong> Analiza Twojego Planu Emerytalnego
+                </div>
+
+                <div class="summary-box">
+                    <h2 style="margin-top: 0;">📈 Podsumowanie Finansowe</h2>
+                    <div class="summary-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">${summary.monthlyRetirement.toLocaleString("pl-PL", { maximumFractionDigits: 0 })} PLN</span>
+                            <span class="stat-label">Miesięczna Emerytura</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${(summary.replacementRate * 100).toFixed(1)}%</span>
+                            <span class="stat-label">Stopa Zastąpienia</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">${retirementYear}</span>
+                            <span class="stat-label">Rok Emerytury</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h2>💡 Analiza AI</h2>
+                ${formattedContent}
+
+                <div class="footer">
+                    <p><strong>Przygody Zusi</strong> - Twój przewodnik po emeryturze</p>
+                    <p>Ten raport został wygenerowany automatycznie na podstawie Twoich danych</p>
+                </div>
+
+                <button class="print-button no-print" onclick="window.print()">🖨️ Drukuj / Zapisz jako PDF</button>
+            </body>
+            </html>
+        `;
+
+        // Open the HTML in a new window for printing/saving as PDF
+        const printWindow = window.open("", "_blank");
+        if (printWindow) {
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.focus();
+
+            // Trigger print dialog after a short delay
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+    };
 
     return (
         <div className="max-w-6xl mx-auto animate-fade-in">
@@ -275,8 +521,13 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
                 <Button onClick={onEdit} variant="outline" className="flex-1" size="lg">
                     ← Edytuj Profil
                 </Button>
-                <Button onClick={onStartOver} variant="outline" className="flex-1" size="lg">
-                    Zacznij Od Nowa
+                <Button
+                    onClick={handleGenerateReport}
+                    className="flex-1"
+                    size="lg"
+                    disabled={isGeneratingReport}
+                >
+                    {isGeneratingReport ? "Generowanie..." : "📄 Generuj Raport PDF"}
                 </Button>
             </div>
         </div>
