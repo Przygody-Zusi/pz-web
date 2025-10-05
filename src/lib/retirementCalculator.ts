@@ -13,29 +13,6 @@ interface YearZusDataEntryExtended extends YearZusDataEntry {
     accumulatedInflation: number;
 }
 
-/**
- * Calculates the total contributed amount (raw and valorized) for a given profile.
- * @param profile RetirementProfile
- * @returns { raw: number, valorized: number }
- */
-export function calculateContributedAmount(profile: RetirementProfile): { raw: number, valorized: number } {
-    let raw = 0;
-    let valorized = 0;
-    const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
-    for (const period of profile.contribution_periods) {
-        const periodEnd = Math.min(period.end_date, retirementYear);
-        for (let year = period.start_date; year < periodEnd; year++) {
-            const yearData = getYearData(year);
-            const valorization = yearData['v_idx'] || 1.0;
-            const yearlyContribution = calculateYearlyContribution(period.employment_type, period.gross_income, yearData);
-            raw += yearlyContribution;
-            valorized = (valorized + yearlyContribution) * valorization;
-            // console.log(`Year: ${year}, Type: ${period.employment_type}, Gross: ${period.gross_income}, Yearly Contribution: ${yearlyContribution.toFixed(2)}, Raw Total: ${raw.toFixed(2)}, Valorized Total: ${valorized.toFixed(2)}`);
-        }
-    }
-    return { raw, valorized };
-}
-
 
 /**
  * Precompute accumulated salaryIncrease and inflation rates for each year in year_zus_data.json, relative to the current year.
@@ -145,24 +122,6 @@ function calculateYearlyContribution(employment_type: string, gross_income: numb
 }
 
 
-/**
- * Calculates the expected monthly retirement amount at the year of actual_retirement_age.
- * Uses compound valorized contributions and expected lifetime months for that year.
- * @param profile RetirementProfile
- * @returns number (monthly retirement amount)
- */
-export function calculateMonthlyRetirementAmount(profile: RetirementProfile): number {
-    // Use the existing function for valorized (compounded) amount
-    const { valorized } = calculateContributedAmount(profile);
-    // Determine retirement year
-    const dob = profile.profile.date_of_birth;
-    const retirementAge = profile.profile.actual_retirement_age;
-    const retirementYear = dob + retirementAge;
-    const retirementYearData = getYearData(retirementYear);
-    const expectedMonths60 = retirementYearData['e_60'] || 240;
-    const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12
-    return valorized / expectedMonths;
-}
 
 /**
  * Returns a summary of retirement calculation results for a given profile.
