@@ -192,3 +192,53 @@ export function getDeflatedAmount(inflatedAmount: number, fromYear: number): num
     if (!inflationRate || inflationRate === 0) return inflatedAmount;
     return inflatedAmount / inflationRate;
 }
+
+/**
+ * Simulates postponing retirement for up to 15 years, extending the last employment period,
+ * and returns an array of raw and valorized amounts for each year.
+ * @param profile RetirementProfile
+ * @param raw number (initial raw amount)
+ * @param valorized number (initial valorized amount)
+ * @returns Array<{ year: number, raw: number, valorized: number }>
+ */
+export function retireExtended(profile: RetirementProfile, initialRaw: number, initialValorized: number): Array<{ year: number, raw: number, valorized: number }> {
+    const results = [];
+    const lastPeriod = profile.contribution_periods.length > 0 ? profile.contribution_periods[profile.contribution_periods.length - 1] : null;
+    if (!lastPeriod) return [];
+
+    let raw = initialRaw;
+    let valorized = initialValorized;
+
+    const dob = profile.profile.date_of_birth;
+    const startRetirementAge = profile.profile.actual_retirement_age;
+    const retirementYear = dob + startRetirementAge;
+
+    for (let year = retirementYear, i = 0; i < 15; year++, i++) {
+        const yearData = getYearData(year);
+        const salaryIncreaseFactor = yearData.accumulatedSalaryIncrease || 1;
+        const adjustedGrossIncome = lastPeriod.gross_income * salaryIncreaseFactor;
+        const yearlyContribution = calculateYearlyContribution(lastPeriod.employment_type, adjustedGrossIncome, yearData);
+        const valorization = yearData['v_idx'] || 1.0;
+        raw += yearlyContribution;
+        valorized = (valorized + yearlyContribution) * valorization;
+
+        // Calculate monthlyRetirement, replacementRate, avgMonthlySalary
+        const expectedMonths60 = yearData['e_60'] || 240;
+        const retirementAge = startRetirementAge + i + 1;
+        const expectedMonths = expectedMonths60 - (retirementAge - 60) * 12;
+        const monthlyRetirement = expectedMonths > 0 ? valorized / expectedMonths : 0;
+        const lastSalary = lastPeriod.gross_income / 12;
+        const replacementRate = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
+        const avgMonthlySalary = yearData.avg_salary || 0;
+
+        results.push({
+            year,
+            raw,
+            valorized,
+            monthlyRetirement,
+            replacementRate,
+            avgMonthlySalary
+        });
+    }
+    return results;
+}
