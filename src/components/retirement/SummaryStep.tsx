@@ -158,10 +158,7 @@ export default function SummaryStep({ profile, onEdit, onStartOver }: SummarySte
         try {
             // Calculate years to live average
             // Based on the retirement calculator logic: e_60 - (retirementAge - 60) * 12
-            const retirementAge = profile.profile.actual_retirement_age;
-            const expectedMonths60 = 240; // approximate average
-            const expectedMonths = Math.max(expectedMonths60 - (retirementAge - 60) * 12, 0);
-            const yearsToLiveAverage = Math.round(expectedMonths / 12);
+            const yearsToLiveAverage = summary.expectedLifeYears
 
             // Prepare the request payload
             const payload = {

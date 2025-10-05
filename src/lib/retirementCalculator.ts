@@ -142,12 +142,14 @@ export function getRetirementSummary(profile: RetirementProfile) {
     const lastSalary = lastPeriod ? lastPeriod.gross_income * salaryIncrease / 12 : 0;
     const replacementRate = lastSalary > 0 ? monthlyRetirement / lastSalary : 0;
     const avgMonthlySalary = retirementYearData.avg_salary || 0;
+    const expectedLifeYears = expectedMonths / 12;
     return {
         raw,
         valorized,
         monthlyRetirement,
         replacementRate,
-        avgMonthlySalary
+        avgMonthlySalary,
+        expectedLifeYears
     };
 }
 
