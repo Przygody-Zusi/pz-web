@@ -1,9 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Przygody Zusi - Retirement Calculator",
-    description: "Plan your retirement journey with AI-powered insights",
+    title: "Symulator Emerytalny ZUS - Przygody Zusi",
+    description: "Zaplanuj swoją emeryturę z pomocą symulatora ZUS. Sprawdź wysokość emerytury i stosunek zastąpienia.",
+    keywords: "emerytura, ZUS, kalkulator emerytalny, symulator emerytalny, stopa zastąpienia",
+    authors: [{ name: "Przygody Zusi" }],
+};
+
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    themeColor: "#00416e",
 };
 
 export default function RootLayout({
@@ -12,8 +20,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body>
+        <html lang="pl">
+            <body className="antialiased">
                 {children}
             </body>
         </html>
