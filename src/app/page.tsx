@@ -42,8 +42,8 @@ export default function RetirementPage() {
                             <div key={num} className="flex items-center flex-1">
                                 <div
                                     className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${step >= num
-                                            ? "bg-primary text-primary-foreground"
-                                            : "bg-muted text-muted-foreground"
+                                        ? "bg-primary text-primary-foreground"
+                                        : "bg-muted text-muted-foreground"
                                         }`}
                                 >
                                     {num}
@@ -59,13 +59,13 @@ export default function RetirementPage() {
                     </div>
                     <div className="flex justify-between max-w-4xl mx-auto mt-2 text-sm">
                         <span className={step >= 1 ? "text-foreground font-medium" : "text-muted-foreground"}>
-                            Describe Goals
+                            Opisz Cele
                         </span>
                         <span className={step >= 2 ? "text-foreground font-medium" : "text-muted-foreground"}>
-                            Adjust Profile
+                            Dostosuj Profil
                         </span>
                         <span className={step >= 3 ? "text-foreground font-medium" : "text-muted-foreground"}>
-                            View Results
+                            Zobacz Wyniki
                         </span>
                     </div>
                 </div>

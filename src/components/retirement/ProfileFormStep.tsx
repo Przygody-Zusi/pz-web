@@ -65,19 +65,19 @@ export default function ProfileFormStep({
     return (
         <div className="max-w-5xl mx-auto animate-fade-in">
             <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold mb-4">Adjust Your Profile</h1>
+                <h1 className="text-4xl font-bold mb-4">Dostosuj Swój Profil</h1>
                 <p className="text-muted-foreground text-lg">
-                    Fine-tune the details to get the most accurate retirement projection
+                    Doprecyzuj szczegóły, aby uzyskać najdokładniejszą prognozę emerytalną
                 </p>
             </div>
 
             <div className="grid gap-6">
                 {/* Personal Information */}
                 <div className="bg-card border rounded-lg p-6 shadow-lg">
-                    <h2 className="text-2xl font-semibold mb-4">Personal Information</h2>
+                    <h2 className="text-2xl font-semibold mb-4">Informacje Osobiste</h2>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium mb-2">Birth Year</label>
+                            <label className="block text-sm font-medium mb-2">Rok Urodzenia</label>
                             <Input
                                 type="number"
                                 value={profile.profile.date_of_birth}
@@ -85,18 +85,18 @@ export default function ProfileFormStep({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">Gender</label>
+                            <label className="block text-sm font-medium mb-2">Płeć</label>
                             <select
                                 value={profile.profile.gender}
                                 onChange={(e) => updatePersonalInfo("gender", e.target.value)}
                                 className="w-full px-3 py-2 border rounded-md bg-background"
                             >
-                                <option value="male">Male</option>
-                                <option value="female">Female</option>
+                                <option value="male">Mężczyzna</option>
+                                <option value="female">Kobieta</option>
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">Employment Start Year</label>
+                            <label className="block text-sm font-medium mb-2">Rok Rozpoczęcia Pracy</label>
                             <Input
                                 type="number"
                                 value={profile.profile.employment_start_date}
@@ -106,7 +106,7 @@ export default function ProfileFormStep({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">Planned Retirement Age</label>
+                            <label className="block text-sm font-medium mb-2">Planowany Wiek Emerytalny</label>
                             <Input
                                 type="number"
                                 value={profile.profile.actual_retirement_age}
@@ -116,7 +116,7 @@ export default function ProfileFormStep({
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-2">Initial ZUS Amount (PLN)</label>
+                            <label className="block text-sm font-medium mb-2">Początkowa Kwota ZUS (PLN)</label>
                             <Input
                                 type="number"
                                 value={profile.profile.initial_amount || 0}
@@ -131,9 +131,9 @@ export default function ProfileFormStep({
                 {/* Contribution Periods */}
                 <div className="bg-card border rounded-lg p-6 shadow-lg">
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-semibold">Employment History</h2>
+                        <h2 className="text-2xl font-semibold">Historia Zatrudnienia</h2>
                         <Button onClick={addContributionPeriod} variant="outline">
-                            + Add Period
+                            + Dodaj Okres
                         </Button>
                     </div>
                     <div className="space-y-4">
@@ -141,7 +141,7 @@ export default function ProfileFormStep({
                             <div key={index} className="border rounded-lg p-4 bg-muted/30">
                                 <div className="grid md:grid-cols-4 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium mb-2">Start Year</label>
+                                        <label className="block text-sm font-medium mb-2">Rok Rozpoczęcia</label>
                                         <Input
                                             type="number"
                                             value={period.start_date}
@@ -153,7 +153,7 @@ export default function ProfileFormStep({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-2">End Year</label>
+                                        <label className="block text-sm font-medium mb-2">Rok Zakończenia</label>
                                         <Input
                                             type="number"
                                             value={period.end_date}
@@ -165,7 +165,7 @@ export default function ProfileFormStep({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-2">Annual Income (PLN)</label>
+                                        <label className="block text-sm font-medium mb-2">Roczny Dochód (PLN)</label>
                                         <Input
                                             type="number"
                                             value={period.gross_income}
@@ -177,7 +177,7 @@ export default function ProfileFormStep({
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium mb-2">Employment Type</label>
+                                        <label className="block text-sm font-medium mb-2">Typ Zatrudnienia</label>
                                         <select
                                             value={period.employment_type}
                                             onChange={(e) =>
@@ -187,10 +187,10 @@ export default function ProfileFormStep({
                                             }
                                             className="w-full px-3 py-2 border rounded-md bg-background"
                                         >
-                                            <option value="employment_contract">Employment Contract</option>
-                                            <option value="self_employed">Self Employed</option>
-                                            <option value="maternity_leave">Maternity Leave</option>
-                                            <option value="parental_leave">Parental Leave</option>
+                                            <option value="employment_contract">Umowa o Pracę</option>
+                                            <option value="self_employed">Samozatrudnienie</option>
+                                            <option value="maternity_leave">Urlop Macierzyński</option>
+                                            <option value="parental_leave">Urlop Rodzicielski</option>
                                         </select>
                                     </div>
                                 </div>
@@ -200,7 +200,7 @@ export default function ProfileFormStep({
                                     size="sm"
                                     className="mt-2"
                                 >
-                                    Remove Period
+                                    Usuń Okres
                                 </Button>
                             </div>
                         ))}
@@ -210,10 +210,10 @@ export default function ProfileFormStep({
 
             <div className="flex gap-4 mt-8">
                 <Button onClick={onBack} variant="outline" className="flex-1">
-                    ← Back
+                    ← Wstecz
                 </Button>
                 <Button onClick={onViewSummary} className="flex-1" size="lg">
-                    View Retirement Summary →
+                    Zobacz Podsumowanie Emerytury →
                 </Button>
             </div>
         </div>
