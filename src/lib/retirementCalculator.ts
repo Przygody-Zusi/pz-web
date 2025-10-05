@@ -99,11 +99,28 @@ export function calculateContributedAmountInflated(profile: RetirementProfile): 
 
 /**
  * Retrieves the YearZusDataEntry for a given year.
+ * Falls back to the last available year if the requested year is not found.
  * @param year number
  * @returns YearZusDataEntry
  */
 function getYearData(year: number): YearZusDataEntryExtended {
-    return yearZusData[year.toString()];
+    // If year exists, return it
+    if (yearZusData[year.toString()]) {
+        return yearZusData[year.toString()];
+    }
+
+    // Find the last available year in the data
+    const years = Object.keys(yearZusData).map(Number).sort((a, b) => a - b);
+    const lastYear = years[years.length - 1];
+
+    // If requested year is beyond our data, return the last year's data
+    if (year > lastYear) {
+        return yearZusData[lastYear.toString()];
+    }
+
+    // If requested year is before our data, return the first year's data
+    const firstYear = years[0];
+    return yearZusData[firstYear.toString()];
 }
 
 /**
