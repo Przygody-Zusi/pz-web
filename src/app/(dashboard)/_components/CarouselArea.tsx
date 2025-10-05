@@ -15,9 +15,11 @@ import {
 export default function CarouselArea({
     setShowPanel,
     buttons,
+    isSubmitted = false,
 }: {
     setShowPanel: (value: boolean) => void
     buttons: string[]
+    isSubmitted?: boolean
 }) {
     return (
         <Carousel
@@ -36,6 +38,7 @@ export default function CarouselArea({
                                         key={index}
                                         className="py-12 px-14 text-lg font-medium"
                                         onClick={() => setShowPanel(true)}
+                                        disabled={isSubmitted}
                                     >
                                         {label}
                                     </Button>
@@ -45,8 +48,8 @@ export default function CarouselArea({
                     </CarouselItem>
                 ))}
             </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
+            {/* <CarouselPrevious />
+            <CarouselNext /> */}
         </Carousel>
     )
 }
