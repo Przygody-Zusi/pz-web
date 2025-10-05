@@ -59,9 +59,6 @@ export default function InitialPromptStep({ onSubmit }: InitialPromptStepProps) 
                 <h1 className="text-4xl font-bold mb-4">
                     Zaplanuj Swoją Emeryturę
                 </h1>
-                <p className="text-muted-foreground text-lg">
-                    Opisz swoją obecną sytuację i cele emerytalne. Nasza AI pomoże stworzyć spersonalizowany plan.
-                </p>
             </div>
 
             <div className="bg-card border rounded-lg p-6 shadow-lg">
