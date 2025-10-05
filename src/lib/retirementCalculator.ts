@@ -59,7 +59,7 @@ export function calculateContributedAmountInflated(profile: RetirementProfile): 
     let valorized = initialAmount;
     const retirementYear = profile.profile.date_of_birth + profile.profile.actual_retirement_age;
     for (const period of profile.contribution_periods) {
-        const periodEnd = Math.min(period.end_date, retirementYear);
+        const periodEnd = Math.min(period.end_date, retirementYear + 1);
         for (let year = period.start_date; year < periodEnd; year++) {
             const yearData = getYearData(year);
             const salaryIncreaseFactor = yearData.accumulatedSalaryIncrease || 1;
