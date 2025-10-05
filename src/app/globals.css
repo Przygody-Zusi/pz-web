@@ -2,48 +2,86 @@
 
 @layer base {
     :root {
+        /* Kolory zgodne z Księgą Znaku ZUS */
+        /* R: 0, G: 65, B: 110 - Granatowy ZUS (główny) */
+        --primary: 207 100% 21.6%;
+        --primary-foreground: 0 0% 100%;
+
+        /* R: 63, G: 132, B: 210 - Niebieski ZUS */
+        --secondary: 212 63% 53.5%;
+        --secondary-foreground: 0 0% 100%;
+
+        /* R: 0, G: 153, B: 63 - Zielony ZUS (sukces) */
+        --accent: 145 100% 30%;
+        --accent-foreground: 0 0% 100%;
+
+        /* R: 255, G: 179, B: 79 - Pomarańczowy ZUS (wyróżnienie) */
+        --highlight: 34 100% 65.5%;
+        --highlight-foreground: 0 0% 0%;
+
+        /* R: 240, G: 94, B: 94 - Czerwony (błędy/ostrzeżenia) */
+        --destructive: 0 79% 65.5%;
+        --destructive-foreground: 0 0% 100%;
+
+        /* R: 190, G: 195, B: 206 - Szary ZUS (tło wtórne) */
+        --muted: 220 21% 77.6%;
+        --muted-foreground: 207 100% 21.6%;
+
+        /* Tło i tekst (WCAG 2.0 AA+) */
         --background: 0 0% 100%;
-        --foreground: 222.2 84% 4.9%;
+        --foreground: 0 0% 0%;
+
+        /* Karty */
         --card: 0 0% 100%;
-        --card-foreground: 222.2 84% 4.9%;
+        --card-foreground: 0 0% 0%;
+
+        /* Popover */
         --popover: 0 0% 100%;
-        --popover-foreground: 222.2 84% 4.9%;
-        --primary: 221.2 83.2% 53.3%;
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 221.2 83.2% 53.3%;
+        --popover-foreground: 0 0% 0%;
+
+        /* Obramowania i inputy */
+        --border: 220 21% 77.6%;
+        --input: 220 21% 77.6%;
+        --ring: 207 100% 21.6%;
+
         --radius: 0.5rem;
     }
 
     .dark {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
-        --primary: 217.2 91.2% 59.8%;
-        --primary-foreground: 222.2 47.4% 11.2%;
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 224.3 76.3% 48%;
+        /* Ciemny motyw z dostosowanymi kolorami ZUS */
+        --background: 207 100% 8%;
+        --foreground: 0 0% 98%;
+
+        --card: 207 100% 10%;
+        --card-foreground: 0 0% 98%;
+
+        --popover: 207 100% 10%;
+        --popover-foreground: 0 0% 98%;
+
+        /* R: 63, G: 132, B: 210 - Niebieski ZUS (jaśniejszy w dark mode) */
+        --primary: 212 63% 53.5%;
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 207 100% 30%;
+        --secondary-foreground: 0 0% 100%;
+
+        /* R: 0, G: 153, B: 63 - Zielony ZUS */
+        --accent: 145 100% 40%;
+        --accent-foreground: 0 0% 100%;
+
+        /* R: 255, G: 179, B: 79 - Pomarańczowy ZUS */
+        --highlight: 34 100% 65.5%;
+        --highlight-foreground: 0 0% 0%;
+
+        --destructive: 0 79% 65.5%;
+        --destructive-foreground: 0 0% 100%;
+
+        --muted: 207 100% 20%;
+        --muted-foreground: 220 21% 77.6%;
+
+        --border: 207 100% 20%;
+        --input: 207 100% 20%;
+        --ring: 212 63% 53.5%;
     }
 }
 
@@ -73,5 +111,42 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    /* Ulepszenia dostępności WCAG 2.0 */
+    /* Focus visible dla nawigacji klawiaturą */
+    *:focus-visible {
+        outline: 3px solid hsl(var(--primary));
+        outline-offset: 2px;
+        border-radius: 4px;
+    }
+
+    /* Ukryj outline dla myszy, ale zachowaj dla klawiatury */
+    *:focus:not(:focus-visible) {
+        outline: none;
+    }
+
+    /* Zapewnij czytelność linków */
+    a {
+        text-decoration-skip-ink: auto;
+    }
+
+    /* Zwiększ kontrast dla tekstu na małych elementach */
+    button,
+    input,
+    select,
+    textarea {
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    /* Zapewnij minimalny rozmiar dotyku (44x44px) */
+    button,
+    a,
+    input[type="checkbox"],
+    input[type="radio"] {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 0.5rem;
     }
 }

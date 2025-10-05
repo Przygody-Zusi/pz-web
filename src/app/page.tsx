@@ -33,16 +33,16 @@ export default function RetirementPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted">
-            {/* Progress Indicator */}
-            <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+        <div className="min-h-screen bg-gradient-to-br from-background via-muted/10 to-secondary/5">
+            {/* Progress Indicator - Kolory ZUS */}
+            <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b-2 border-primary/20 shadow-md">
                 <div className="container mx-auto px-4 py-4">
                     <div className="flex items-center justify-between max-w-4xl mx-auto">
                         {[1, 2, 3].map((num) => (
                             <div key={num} className="flex items-center flex-1">
                                 <div
-                                    className={`flex items-center justify-center w-10 h-10 rounded-full transition-all ${step >= num
-                                        ? "bg-primary text-primary-foreground"
+                                    className={`flex items-center justify-center w-12 h-12 rounded-full font-bold transition-all shadow-md ${step >= num
+                                        ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
                                         : "bg-muted text-muted-foreground"
                                         }`}
                                 >
@@ -50,21 +50,21 @@ export default function RetirementPage() {
                                 </div>
                                 {num < 3 && (
                                     <div
-                                        className={`flex-1 h-1 mx-2 transition-all ${step > num ? "bg-primary" : "bg-muted"
+                                        className={`flex-1 h-2 mx-3 rounded-full transition-all ${step > num ? "bg-primary" : "bg-muted"
                                             }`}
                                     />
                                 )}
                             </div>
                         ))}
                     </div>
-                    <div className="flex justify-between max-w-4xl mx-auto mt-2 text-sm">
-                        <span className={step >= 1 ? "text-foreground font-medium" : "text-muted-foreground"}>
+                    <div className="flex justify-between max-w-4xl mx-auto mt-3 text-sm">
+                        <span className={`${step >= 1 ? "text-primary font-bold" : "text-muted-foreground"} transition-colors`}>
                             Opisz Cele
                         </span>
-                        <span className={step >= 2 ? "text-foreground font-medium" : "text-muted-foreground"}>
+                        <span className={`${step >= 2 ? "text-primary font-bold" : "text-muted-foreground"} transition-colors`}>
                             Dostosuj Profil
                         </span>
-                        <span className={step >= 3 ? "text-foreground font-medium" : "text-muted-foreground"}>
+                        <span className={`${step >= 3 ? "text-primary font-bold" : "text-muted-foreground"} transition-colors`}>
                             Zobacz Wyniki
                         </span>
                     </div>
