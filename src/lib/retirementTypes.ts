@@ -13,6 +13,7 @@ export interface RetirementProfile {
         gender: string;
         employment_start_date: number; // e.g. 2000
         actual_retirement_age: number;
+        initial_ammount?: number;
     };
     retirement_goals: {
         initial_prompt: string;
@@ -20,7 +21,6 @@ export interface RetirementProfile {
         expected_life_status: number;
     };
     contribution_periods: ContributionPeriod[];
-    initial_ammount?: number;
 }
 
 export interface YearZusDataEntry {
