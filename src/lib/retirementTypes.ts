@@ -13,7 +13,7 @@ export interface RetirementProfile {
         gender: string;
         employment_start_date: number; // e.g. 2000
         actual_retirement_age: number;
-        initial_ammount?: number;
+        initial_amount?: number;
     };
     retirement_goals: {
         initial_prompt: string;
