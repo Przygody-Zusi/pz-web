@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Field,
@@ -18,24 +18,28 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import {RetirementProfile} from "@/lib/retirementTypes"
+
+
 export default function UserForm() {
-  const [age, setAge] = useState("")
+  const [birthYear, setBirthyear] = useState("")
   const [gender, setGender] = useState("")
   const [startYear, setStartYear] = useState("")
   const [retirementYear, setRetirementYear] = useState("")
   const [salary, setSalary] = useState("")
   const [savings, setSavings] = useState("")
+  const [error, setError] = useState<string>('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!age || !gender || !startYear || !retirementYear || !salary || !savings) {
+    if (!birthdate || !gender || !startYear || !retirementYear || !salary || !savings) {
       alert("Proszę wypełnić wszystkie pola.")
       return
     }
 
     const formData = {
-      age,
+      birthdate,
       gender,
       startYear,
       retirementYear,
@@ -45,20 +49,50 @@ export default function UserForm() {
 
     console.log("Form submitted:", formData)
     alert(`Form submitted!
-Wiek: ${age}
-Płeć: ${gender}
-Rok rozpoczęcia pracy: ${startYear}
-Planowany rok przejścia na emeryturę: ${retirementYear}
-Wynagrodzenie: ${salary}
-Zgromadzone składki: ${savings}`)
-
-    setAge("")
-    setGender("")
-    setStartYear("")
-    setRetirementYear("")
-    setSalary("")
-    setSavings("")
+    Data urodzin: ${birthdate}
+    Płeć: ${gender}
+    Rok rozpoczęcia pracy: ${startYear}
+    Planowany rok przejścia na emeryturę: ${retirementYear}
+    Wynagrodzenie: ${salary}
+    Zgromadzone składki: ${savings}`) 
   }
+
+  useEffect(() => {
+    try {
+      // Read from localStorage
+      const storedData = localStorage.getItem('dashboardData');
+      
+      if (storedData) {
+        // Parse JSON string to object
+        let data = JSON.parse(storedData);
+        data = JSON.parse(data);
+
+        console.log(typeof(data.profile.gender))
+        // Access fields by their name and set to state
+        if (data.profile.gender) {
+          setGender(data.profile.gender);
+          console.log(gender);
+          console.log(data.profile.gender);
+        }
+        
+        if (data.profile.employment_start_date) {
+          setStartYear(data.profile.employment_start_date);
+        }
+        
+        if (data.retirement_goals.expected_retirement_age) {
+          setRetirementYear(data.retirement_goals.expected_retirement_age);
+        }
+
+        setError('');
+      } else {
+        setError('No data found in localStorage');
+      }
+    } catch (err) {
+      // Handle parsing errors or other exceptions
+      setError('Error reading or parsing data from localStorage');
+      console.error('localStorage error:', err);
+    }
+  }, []);
 
   // Generate options for years
   const currentYear = new Date().getFullYear()
@@ -72,18 +106,21 @@ Zgromadzone składki: ${savings}`)
           <FieldDescription>Wprowadź dane potrzebne do obliczeń.</FieldDescription>
 
           <FieldGroup>
-            {/* Age */}
+            {/* Birth Year */}
             <Field>
-              <FieldLabel htmlFor="age">Wiek</FieldLabel>
-              <Input
-                id="age"
-                type="number"
-                value={age}
-                onChange={e => setAge(e.target.value)}
-                placeholder="Podaj swój wiek"
-                min={0}
-                max={120}
-              />
+              <FieldLabel htmlFor="birthYear">Rok urodzin</FieldLabel>
+              <Select value={birthYear} onValueChange={setBirthyear}>
+                <SelectTrigger id="birthYear">
+                  <SelectValue placeholder="YYYY" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map(year => (
+                    <SelectItem key={year} value={String(year)}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
 
             {/* Gender */}
@@ -91,7 +128,7 @@ Zgromadzone składki: ${savings}`)
               <FieldLabel htmlFor="gender">Płeć</FieldLabel>
               <Select value={gender} onValueChange={setGender}>
                 <SelectTrigger id="gender">
-                  <SelectValue placeholder="Wybierz płeć" />
+                  <SelectValue placeholder={gender} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="male">Mężczyzna</SelectItem>
