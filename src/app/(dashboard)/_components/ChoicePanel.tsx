@@ -13,7 +13,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { renameEmploymentType } from "@/lib/rename_employment_type"
-import { RetirementProfile } from "@/lib/retirementCalculator"
+import { RetirementProfile } from "@/lib/retirementTypes"
 
 export default function ChoicePanel({
     setShowPanel,

@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import ChoicePanel from "./ChoicePanel"
 import CarouselArea from "./CarouselArea"
-import { RetirementProfile } from "@/lib/retirementCalculator"
+import { RetirementProfile } from "@/lib/retirementTypes"
 import BasicForm from "../_components/BasicForm"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 export default function MainViewCard() {
     const [showPanel, setShowPanel] = useState(false)
@@ -47,16 +48,14 @@ export default function MainViewCard() {
     });
 
     return (
-        <Card className="h-full shadow-lg flex flex-col">
-            <CardHeader>
-                <CardTitle className="text-xl font-semibold">Główny widok</CardTitle>
-            </CardHeader>
-
-            <CardContent className="flex flex-col h-full">
-                <BasicForm/>
-                <CarouselArea setShowPanel={setShowPanel} buttons={buttons} />
-                {showPanel && <ChoicePanel setShowPanel={setShowPanel} addButton={addButton} nextId={buttons.length + 1} isLoading={isLoading} retirementProfile={retirementProfile} />}
-            </CardContent>
-        </Card>
+        <ScrollArea className="h-[90vh] w-full rounded-lg">
+            <Card className="h-full shadow-lg flex flex-col">
+                <CardContent className="flex flex-col h-full">
+                    <BasicForm/>
+                    <CarouselArea setShowPanel={setShowPanel} buttons={buttons} />
+                    {showPanel && <ChoicePanel setShowPanel={setShowPanel} addButton={addButton} nextId={buttons.length + 1} isLoading={isLoading} retirementProfile={retirementProfile} />}
+                </CardContent>
+            </Card>
+        </ScrollArea>
     )
 }
