@@ -65,7 +65,7 @@ Zgromadzone składki: ${savings}`)
   const years = Array.from({ length: 101 }, (_, i) => 1900 + i).filter(y => y <= 2100)
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full max-w-md items-center mx-auto mb-16">
       <form onSubmit={handleSubmit}>
         <FieldSet>
           <FieldLegend>Profil użytkownika</FieldLegend>
@@ -163,8 +163,8 @@ Zgromadzone składki: ${savings}`)
           </FieldGroup>
         </FieldSet>
 
-        <Field orientation="horizontal" className="mt-4">
-          <Button type="submit">Dalej</Button>
+        <Field orientation="horizontal" className="mt-4 ">
+          <Button type="submit" className="w-full">Dalej</Button>
         </Field>
       </form>
     </div>

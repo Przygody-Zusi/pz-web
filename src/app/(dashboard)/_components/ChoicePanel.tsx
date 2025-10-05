@@ -33,6 +33,7 @@ export default function ChoicePanel({
     const [endDate, setEndDate] = useState("")
     const [grossIncome, setGrossIncome] = useState("")
     const [employmentType, setEmploymentType] = useState<EmploymentType>("employment_contract")
+    const [isSubmitted, setIsSubmitted] = useState(false)
 
     const { setRetirementProfile } = useRetirementStore()
 
@@ -69,6 +70,7 @@ export default function ChoicePanel({
                             if (year.length <= 4) setStartDate(year)
                         }}
                         type="text"
+                        disabled={isSubmitted}
                     />
                     <Input
                         placeholder="Rok zakończenia"
@@ -78,6 +80,7 @@ export default function ChoicePanel({
                             if (year.length <= 4) setEndDate(year)
                         }}
                         type="text"
+                        disabled={isSubmitted}
                     />
                     <Input
                         placeholder="Przychód brutto"
@@ -87,6 +90,7 @@ export default function ChoicePanel({
                             setGrossIncome(value)
                         }}
                         type="text"
+                        disabled={isSubmitted}
                     />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -129,7 +133,7 @@ export default function ChoicePanel({
                     <Button
                         className="bg-red-600 hover:bg-red-700 text-white"
                         onClick={handleConfirm}
-                        disabled={!startDate || !endDate || !grossIncome}
+                        disabled={!startDate || !endDate || !grossIncome || isSubmitted}
                     >
                         Zatwierdź i zamknij
                     </Button>

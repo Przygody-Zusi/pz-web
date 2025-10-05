@@ -15,11 +15,9 @@ import {
 export default function CarouselArea({
     setShowPanel,
     buttons,
-    isSubmitted = false,
 }: {
     setShowPanel: (value: boolean) => void
-    buttons: string[]
-    isSubmitted?: boolean
+    buttons: { label: string, disabled: boolean }[],
 }) {
     return (
         <Carousel
@@ -29,7 +27,7 @@ export default function CarouselArea({
             className="whitespace-nowrap h-2/5 mb-4 *:mx-10"
         >
             <CarouselContent>
-                {buttons.map((label, index) => (
+                {buttons.map((button, index) => (
                     <CarouselItem key={index} className="md:basis-1/2 lg:basis-1/3">
                         <div className="p-1">
                             <Card>
@@ -38,9 +36,9 @@ export default function CarouselArea({
                                         key={index}
                                         className="py-12 px-14 text-lg font-medium"
                                         onClick={() => setShowPanel(true)}
-                                        disabled={isSubmitted}
+                                        disabled={button.disabled}
                                     >
-                                        {label}
+                                        {button.label}
                                     </Button>
                                 </CardContent>
                             </Card>

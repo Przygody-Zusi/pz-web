@@ -10,12 +10,12 @@ import { useRetirementStore } from "@/store/useRetirement"
 
 export default function MainViewCard() {
     const [showPanel, setShowPanel] = useState(false)
-    const [buttons, setButtons] = useState<string[]>(Array.from({ length: 1 }, (_, i) => `Wybór ${i + 1}`))
+    const [buttons, setButtons] = useState<{ label: string, disabled: boolean }[]>(Array.from({ length: 1 }, (_, i) => ({ label: `Wybór ${i + 1}`, disabled: false })))
 
     const { retirementProfile, setRetirementProfile, isLoading, setIsLoading } = useRetirementStore()
 
     const addButton = (label: string) => {
-        setButtons((prev) => [...prev, label])
+        setButtons((prev) => [...prev, { label, disabled: false }])
         setShowPanel(false)
     }
 
@@ -54,6 +54,7 @@ export default function MainViewCard() {
             <Card className="h-full shadow-lg flex flex-col">
                 <CardContent className="flex flex-col h-full">
                     <BasicForm />
+                    
                     <CarouselArea setShowPanel={setShowPanel} buttons={buttons} />
                     {showPanel && (
                         <ChoicePanel
