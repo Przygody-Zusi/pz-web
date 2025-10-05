@@ -1,4 +1,5 @@
-import { calculateContributedAmount, calculateMonthlyRetirementAmount, RetirementProfile } from './retirementCalculator';
+import { calculateContributedAmount, calculateMonthlyRetirementAmount } from './retirementCalculator';
+import { RetirementProfile } from './retirementTypes';
 
 describe('calculateMonthlyRetirementAmount', () => {
     it('returns 0 for empty contribution periods', () => {
